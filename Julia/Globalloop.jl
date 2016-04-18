@@ -1,11 +1,11 @@
 using DataFrames
 include("ComputeBid")# c'est la resolution du probleme dual avec le solveur.
-
+include("BidComparision")
 function timeloop()
 
   Time = readtable("Yield_Management/Julia/Decoupage-Temporel_DonneesAF.csv")
-  Demand = readtable("Yield_Management/Julia/Demand_DonneesAF.csv")
-  Flow = readtable("Yield_Management/Julia/Flux_DonneesAF.csv")
+  demandlist = readtable("Yield_Management/Julia/Demand_DonneesAF.csv")
+  flowlist = readtable("Yield_Management/Julia/Flux_DonneesAF.csv")
   Flight = readtable("Yield_Management/Julia/Vols-Cabines_DonneesAF.csv")
 
   ##pas forcement utile
@@ -36,9 +36,9 @@ function timeloop()
 
   for timestamp in newDB
     bidprices = ComputeBid()
-    acceptedrequests_timeframe = CompareBidQuery() #incorporer le check des places disponibles et la comparaison des bidprices.
+    (acceptedrequests_timeframe,seatinventory,revenuetf)  = CompareBidQuery(timestamp,demandlist,flowlist,bidprices) #incorporer le check des places disponibles et la comparaison des bidprices.
     #Penser à mettre à jour les nombres de sieges dispo dans les avions.
-    incomes = incomes+Revenue(acceptedrequests_timeframe)
+    incomes = incomes+revenuetf
     accepetedrequests += acceptedrequests_timeframe
   end
   println(incomes)
