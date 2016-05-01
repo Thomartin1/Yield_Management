@@ -1,46 +1,48 @@
+######packages utilises dans le code
 using DataFrames
-include("ComputeBid")# c'est la resolution du probleme dual avec le solveur.
-include("BidComparision")
+
+######import des fonctions codées dans d'autres fichiers
+include()
+
+######ecriture d'une bouvcle de tres haut niveau qui permet de voir l'architecture du bid-pricing
 function timeloop()
+  # On commence par mettre les données en forme, on appelle des routines.
+  # Il est bon de noter que tout va se presenter sous forme de dictionaires puisque les vols ont des designations en string
 
   Time = readtable("Yield_Management/Julia/Decoupage-Temporel_DonneesAF.csv")
+  newDB=Time[1] #une liste des timeframes
+  durationd=Time[2] # la duree de chaque time frame
+
+  #on cree un dictionaire: la clef est l'id du flow, de l'autre cote on trouve une liste des id des leg utilises.
+  leginflow = LegFromFlow("/home/sebastien/Documents/Projet_Air_France/p3.csv")
+  #on crée le tenseur des fares de chaque vol.
+  #prices est un dictionaire triple: Dict{Int64,Dict{Int64,Dict{ASCIIString,float}}}.
+  prices = FaresFromFlow("/home/sebastien/Documents/Projet_Air_France/p3.csv")
+  #seatinventory est un dictionaire double: Dict{Int64(flowid),Dict{Int64,float}}.
+  seatinventory = CapacityOfLeg("/home/sebastien/Documents/Projet_Air_France/p4.csv")
+
+  #On lit la demande de maniere assez basique, pas besoin de la mettre en forme comme pour le reste.
   demandlist = readtable("Yield_Management/Julia/Demand_DonneesAF.csv")
-  flowlist = readtable("Yield_Management/Julia/Flux_DonneesAF.csv")
-  Flight = readtable("Yield_Management/Julia/Vols-Cabines_DonneesAF.csv")
 
-  ##pas forcement utile
-  # newDB=Time[1]
-  # durationd=Time[2]
-  # flowIDdemand=Demand[1]
-  # tfNB=Demand[2]
-  # bookingclass=Demand[3]
-  # variance=Demand[4]
-  # flightnumber=Flight[1]
-  # departure=Flight[2]
-  # cabin=Flight[3]
-  # originairport=Flight[4]
-  # destinationairport=Flight[5]
-  # capacity=Flight[6]
-  # flowidflow=Flow[1]
-  # flowname=Flow[2]
-  # bookingclass=Flow[3]
-  # flowdepdate=Flow[4]
-  # fare=Flow[5]
-  # legindex=Flow[6]
-  # flightnumber=Flow[7]
-  # flightdepdate=Flow[8]
-  # cabin=Flow[9]
 
+  # On met à 0 les deux choses qui vont nous interesser: le bif et la liste des demandes acceptees.
   incomes = 0
   accepetedrequests = NULL
 
-  for timestamp in newDB
-    bidprices = ComputeBid()
-    (acceptedrequests_timeframe,seatinventory,revenuetf)  = CompareBidQuery(timestamp,demandlist,flowlist,bidprices) #incorporer le check des places disponibles et la comparaison des bidprices.
-    #Penser à mettre à jour les nombres de sieges dispo dans les avions.
+  # Le temps est découpé en timframes; on les examine un par un
+  for time in timeframes
+    # on calcule les bidprices uniquement pour ce timeframe, ils seront CONSTANTS sur la periode
+    bidprices = ComputeBid(prices,meandemand,capacities) #bidprice est un dictionaire double: Dict{Int64(flowid),Dict{Int64,float}}
+    # on liste toutes les demandes acceptees dans le timeframe en cour et on ressort la list avec le revenue correspondant. acceptedrequests_timeframe est une liste des demandes aceptees, seatinventory represente LES SIEGES QUI RESTENT LIBRES.
+    (acceptedrequests_timeframe,revenuetf)  = CompareBidQuery!(bidprices,leginflow,seatinventory,demandlist, timestamp)
+    # On met a jour les donnees qui nous interessent.
     incomes = incomes+revenuetf
     accepetedrequests += acceptedrequests_timeframe
   end
-  println(incomes)
+  #Il s'agira de la liste des sieges qui n'ont pas ete pris
+  println(seatinventory)
+  print(incomes)
   println(accepetedrequests)
+
+  return(incomes)
 end

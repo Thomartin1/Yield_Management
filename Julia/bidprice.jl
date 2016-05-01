@@ -3,7 +3,7 @@ using JuMP  # Need to say it whenever we use JuMP
 
 using CPLEX # Loading the CPLEX module for using its solver
 
-function ComputeBid(prices,meandemand,capacities)
+function ComputeBid(leginflow,prices,meandemand,capacities)
   #MODEL CONSTRUCTION
   #--------------------
 
@@ -11,12 +11,22 @@ function ComputeBid(prices,meandemand,capacities)
 
   #INPUT DATA
   #----------
-
-  nbOD = size()
-  nbleg = size()
-  for j=1:nbOD
-    r[j] = #  price for fare class j є J
+  totalflights=[]
+  for flow in leginflow
+    for bookingclass in (leginflow[flow])
+      append!(totalflight,leginflow[flow][bookingclass])
+    end
   end
+  totaluniqueflights =Set(totalflight)
+
+
+  # nbOD = size(leginflow)
+  # nbleg = size(totaluniqueflights)
+  # for j=1:nbOD
+  #   r[j] = #  price for fare class j є J
+  # end
+
+  #il faut repenser les appelation ici pour que ca colle avec le reste!!!
   for j=1:nbOD
     d[j] =  # mean demand for fare class j є J
   end
