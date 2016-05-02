@@ -2,7 +2,7 @@ using DataFrames
 
 # Fonction qui renvoie les capacités utilisées de chaque vol
 
-function CapacityOfLeg(PATH)
+function capacityOfLeg(PATH)
   file = readtable(PATH)
   cap = Dict{UTF8String,Int64}()
   for i = 1:size(file[1])[1]
