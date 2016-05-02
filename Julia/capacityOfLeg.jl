@@ -1,6 +1,6 @@
 using DataFrames
 
-# Fonction qui renvoie les vols utilisées par un itinéraire
+# Fonction qui renvoie les capacités utilisées de chaque vol
 
 function CapacityOfLeg(PATH)
   file = readtable(PATH)

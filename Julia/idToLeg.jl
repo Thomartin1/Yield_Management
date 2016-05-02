@@ -1,6 +1,6 @@
 using DataFrames
 
-# Fonction qui renvoie les vols utilisées par un itinéraire   -->????
+# Fonction qui renvoie des id pour chaques vol.
 function idToLeg(PATH)
   file = readtable(PATH)
   id = Dict{Int64,UTF8String}()

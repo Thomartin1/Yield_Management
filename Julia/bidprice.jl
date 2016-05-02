@@ -11,31 +11,37 @@ function ComputeBid(leginflow,prices,meandemand,capacities)
 
   #INPUT DATA
   #----------
-  totalflights=[]
-  for flow in leginflow
-    for bookingclass in (leginflow[flow])
-      append!(totalflight,leginflow[flow][bookingclass])
-    end
+  idToLeg = idToLeg(PATH4)
+  legFromFlow = legFromFlow(PATH3)
+  idToFlow = IdToFlow(PATH3)
+  capacityOfLeg = CapacityOfLeg(PATH4)
+  nbOD = size(idToFlow)
+  nbleg = length(idToLeg)
+
+  for j=1:nbOD
+    r[j] =
+    #  price for fare class j є J
   end
-  totaluniqueflights =Set(totalflight)
-
-
-  # nbOD = size(leginflow)
-  # nbleg = size(totaluniqueflights)
-  # for j=1:nbOD
-  #   r[j] = #  price for fare class j є J
-  # end
 
   #il faut repenser les appelation ici pour que ca colle avec le reste!!!
   for j=1:nbOD
-    d[j] =  # mean demand for fare class j є J
+    d[j] =
+    # mean demand for fare class j є J
   end
+
   for k=1:nbleg
-    c[k] = # capacity of leg k є K
+    c[k] = capacityOfLeg[idToLeg[k]]
+    # capacity of each leg
   end
+
   for j=1:nbOD
     for k=1:nbleg
-      delta[j][k] = # = 1 if O&D fare class j uses leg k, 0 otherwise
+      if (idToLeg[k] in legFromFlow[idToFlow[j][1]][idToFlow[j][2]]):
+        delta[j][k] =  1
+        # = 1 if O&D fare class j uses leg k, 0 otherwise
+      else:
+        delta[j][k] = 0
+      end
     end
   end
 
