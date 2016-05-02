@@ -2,27 +2,31 @@
 using DataFrames
 
 ######import des fonctions codées dans d'autres fichiers
-include()
+include("bidprice")
+include("BidComparision")
+include("legFromFlow")
+include("FaresfromFlow")
+include("capacityOfLeg")
 
 ######ecriture d'une bouvcle de tres haut niveau qui permet de voir l'architecture du bid-pricing
-function timeloop()
+function timeloop(pathtime,pathflow,pathflights,pathdemand)
   # On commence par mettre les données en forme, on appelle des routines.
   # Il est bon de noter que tout va se presenter sous forme de dictionaires puisque les vols ont des designations en string
 
-  Time = readtable("Yield_Management/Julia/Decoupage-Temporel_DonneesAF.csv")
+  Time = readtable(pathtime)
   newDB=Time[1] #une liste des timeframes
   durationd=Time[2] # la duree de chaque time frame
 
   #on cree un dictionaire: la clef est l'id du flow, de l'autre cote on trouve une liste des id des leg utilises.
-  leginflow = LegFromFlow("/home/sebastien/Documents/Projet_Air_France/p3.csv")
+  leginflow = LegFromFlow(pathflow)
   #on crée le tenseur des fares de chaque vol.
   #prices est un dictionaire triple: Dict{Int64,Dict{Int64,Dict{ASCIIString,float}}}.
-  prices = FaresFromFlow("/home/sebastien/Documents/Projet_Air_France/p3.csv")
+  prices = FaresFromFlow(pathflow)
   #seatinventory est un dictionaire double: Dict{Int64(flowid),Dict{Int64,float}}.
-  seatinventory = CapacityOfLeg("/home/sebastien/Documents/Projet_Air_France/p4.csv")
+  seatinventory = CapacityOfLeg(pathflights)
 
   #On lit la demande de maniere assez basique, pas besoin de la mettre en forme comme pour le reste.
-  demandlist = readtable("Yield_Management/Julia/Demand_DonneesAF.csv")
+  demandlist = readtable(pathdemand)
 
 
   # On met à 0 les deux choses qui vont nous interesser: le bif et la liste des demandes acceptees.
