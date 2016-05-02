@@ -15,15 +15,16 @@ function ComputeBid(leginflow,prices,meandemand,capacities)
   legFromFlow = legFromFlow(PATH3)
   idToFlow = IdToFlow(PATH3)
   capacityOfLeg = CapacityOfLeg(PATH4)
+  faresFromFlow = FaresFromFlow(PATH3)
+
   nbOD = size(idToFlow)
   nbleg = length(idToLeg)
 
   for j=1:nbOD
-    r[j] =
+    r[j] = faresFromFlow[idToFlow[j][1]][idToFlow[j][2]]
     #  price for fare class j є J
   end
 
-  #il faut repenser les appelation ici pour que ca colle avec le reste!!!
   for j=1:nbOD
     d[j] =
     # mean demand for fare class j є J
