@@ -63,8 +63,6 @@ function ComputeBid(timeperiode)
     end
   end
 
-  capconst = [0.0 for k = 1:nbleg]
-
   #VARIABLES
   #---------
 
@@ -78,9 +76,12 @@ function ComputeBid(timeperiode)
   #CONSTRAINTS
   #-----------
 
+  @defConstrRef capconst[1:nbleg]
+
   for k=1:nbleg
-    @addConstraint(myModel, capconst[k], sum{delta[j,k]*x[j], j=1:nbOD} <= c[k]) # capacity constraint
+    capconst[k] = @addConstraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= c[k]) # capacity constraint
   end
+
 
   #THE MODEL IN A HUMAN-READABLE FORMAT
   #------------------------------------
@@ -95,9 +96,9 @@ function ComputeBid(timeperiode)
   #for j=1:nbOD
   #  println("x = ", getValue(x)) # getValue(decision_variable) will give the optimum value of the associated decision variable
   #end
+
   for k=1:nbleg
-    println(capconst)
-    println("bid-price of leg k = ", getDual(capconst[k]))
+    println("bid-price of leg ", k )
+    println(getDual(capconst[k]))
   end
-  return(capconst)
 end
