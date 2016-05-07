@@ -5,12 +5,6 @@ using CPLEX # Loading the CPLEX module for using its solver
 
 include("globalVar.jl")
 
-Capdico = [0 for k = 1:nbleg]
-for k=1:nbleg
-  Capdico[k] = capacityofleg[idtoleg[k]]
-  # capacity of each leg
-end
-
 function ComputeBid(timeperiode,
                     c = Capdico)
 
@@ -29,7 +23,7 @@ function ComputeBid(timeperiode,
 
   d = [0.0 for k = 1:nbOD]
   for j=1:nbOD
-    d[j] = demfromflow[idtoflow[j][1]][idtoflow[j][2]]
+    d[j] = demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]]
     # mean demand for fare class j є J
   end
 
@@ -63,20 +57,20 @@ function ComputeBid(timeperiode,
   #VARIABLES
   #---------
 
-  @defVar(myModel, 0 <= x[j=1:nbOD] <= d[j]) # allocation of capacity for O&D fare class j є J
+  @variable(myModel, 0 <= x[j=1:nbOD] <= d[j]) # allocation of capacity for O&D fare class j є J
 
   #OBJECTIVE
   #---------
 
-  @setObjective(myModel, Max, sum{r[j]*x[j], j=1:nbOD} ) # Sets the objective to be maximazed
+  @objective(myModel, Max, sum{r[j]*x[j], j=1:nbOD} ) # Sets the objective to be maximazed
 
   #CONSTRAINTS
   #-----------
 
-  @defConstrRef capconst[1:nbleg]
+  @constraintref capconst[1:nbleg]
 
   for k=1:nbleg
-    capconst[k] = @addConstraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= c[k]) # capacity constraint
+    capconst[k] = @constraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= c[k]) # capacity constraint
   end
 
 
@@ -97,7 +91,7 @@ function ComputeBid(timeperiode,
 
   bid = Dict{UTF8String,Float64}()
   for k=1:nbleg
-    bid[idtoleg[k]] = getDual(capconst[k])
+    bid[idtoleg[k]] = getdual(capconst[k])
   end
   return bid
 end

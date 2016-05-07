@@ -1,6 +1,6 @@
 using DataFrames
-include("SingleLegComparision")
-include("Update_seats")
+include("SingleLegComparision.jl")
+include("Update_seats.jl")
 
 
 #A un instant donne on etudie toutes les demandes pour le reseau.

@@ -24,7 +24,7 @@ idtoflow = idToFlow(PATH3)
 legfromflow = legFromFlow(PATH3)
 capacityofleg = capacityOfLeg(PATH4)
 faresfromflows = faresFromFlows(PATH3)
-demfromflow = demFromFlow(PATH2, timeperiode)
+demfromflow = demFromFlow(PATH2)
 
 # Nomble de legs et de Flow totaux
 nbOD = length(idtoflow)
