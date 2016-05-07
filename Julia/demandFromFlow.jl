@@ -11,14 +11,12 @@ function demFromFlow(PATH, timeperiode)
       flowid = file[1][i]
       bookingclass = file[3][i]
       demande = file[4][i]
-      compt = 1
       if in(flowid,keys(DemFlow))
         DemFlow[flowid][bookingclass] = demande
       else
         DemFlow[flowid] = Dict{Int64,Int64}()
         DemFlow[flowid][bookingclass]= demande
       end
-      compt = compt + 1
     end
   end
   return DemFlow

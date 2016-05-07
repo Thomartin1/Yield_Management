@@ -3,35 +3,23 @@ using JuMP  # Need to say it whenever we use JuMP
 
 using CPLEX # Loading the CPLEX module for using its solver
 
+include("globalVar.jl")
 
-function ComputeBid(timeperiode)
+Capdico = [0 for k = 1:nbleg]
+for k=1:nbleg
+  Capdico[k] = capacityofleg[idtoleg[k]]
+  # capacity of each leg
+end
 
-  PATH2 = "/home/sebastien/Documents/Projet_Air_France/p2.csv"
-  PATH3 = "/home/sebastien/Documents/Projet_Air_France/p3.csv"
-  PATH4 = "/home/sebastien/Documents/Projet_Air_France/p4.csv"
-  timeperiode = 1
-  include("/home/sebastien/Documents/Yield_Management/Julia/idToLeg.jl")
-  include("/home/sebastien/Documents/Yield_Management/Julia/legFromFlow.jl")
-  include("/home/sebastien/Documents/Yield_Management/Julia/idToFlow.jl")
-  include("/home/sebastien/Documents/Yield_Management/Julia/capacityOfLeg.jl")
-  include("/home/sebastien/Documents/Yield_Management/Julia/faresFromFlows.jl")
-  include("/home/sebastien/Documents/Yield_Management/Julia/demandFromFlow.jl")
+function ComputeBid(timeperiode,
+                    c = Capdico)
 
   #MODEL CONSTRUCTION
   #--------------------
 
   myModel = Model(solver=CplexSolver())
 
-  #INPUT DATA
-  #----------
-  idtoleg = idToLeg(PATH4)
-  legfromflow = legFromFlow(PATH3)
-  idtoflow = idToFlow(PATH3)
-  capacityofleg = capacityOfLeg(PATH4)
-  faresfromflows = faresFromFlows(PATH3)
-  demfromflow = demFromFlow(PATH2, timeperiode)
-  nbOD = length(idtoflow)
-  nbleg = length(idtoleg)
+  filetest = readtable(PATH2)
 
   r = [0.0 for k = 1:nbOD]
   for j=1:nbOD
@@ -45,12 +33,6 @@ function ComputeBid(timeperiode)
     # mean demand for fare class j є J
   end
 
-  c = [0 for k = 1:nbleg]
-  for k=1:nbleg
-    c[k] = capacityofleg[idtoleg[k]]
-    # capacity of each leg
-  end
-
   delta = [0 for m = 1:nbOD , n = 1:nbleg]
   for j=1:nbOD
     for k=1:nbleg
@@ -62,6 +44,21 @@ function ComputeBid(timeperiode)
       end
     end
   end
+
+  # print(idtoflow[1])
+  # println(d[1])
+  # print(idtoflow[2])
+  # println(d[2])
+  # print(idtoflow[3])
+  # println(d[3])
+  # print(idtoflow[4])
+  # println(d[4])
+  # print(idtoflow[5])
+  # println(d[5])
+  # print(idtoflow[6])
+  # println(d[6])
+  # print(idtoflow[1480])
+  # println(d[1480])
 
   #VARIABLES
   #---------
@@ -86,19 +83,21 @@ function ComputeBid(timeperiode)
   #THE MODEL IN A HUMAN-READABLE FORMAT
   #------------------------------------
   println("The optimization problem to be solved is:")
-  print(myModel) # Shows the model constructed in a human-readable form
+  #print(myModel) # Shows the model constructed in a human-readable form
 
   #SOLVE IT AND DISPLAY THE RESULTS
   #--------------------------------
   status = solve(myModel) # solves the model
 
-  println("Objective value: ", getObjectiveValue(myModel)) # getObjectiveValue(model_name) gives the optimum objective value
+  # println("Objective value: ", getObjectiveValue(myModel)) # getObjectiveValue(model_name) gives the optimum objective value
   #for j=1:nbOD
   #  println("x = ", getValue(x)) # getValue(decision_variable) will give the optimum value of the associated decision variable
   #end
+  #
 
+  bid = Dict{UTF8String,Float64}()
   for k=1:nbleg
-    println("bid-price of leg ", k )
-    println(getDual(capconst[k]))
+    bid[idtoleg[k]] = getDual(capconst[k])
   end
+  return bid
 end
