@@ -1,5 +1,5 @@
-include("Globalloop")
-include("ConfidenceInterval")
+include("Globalloop.jl")
+include("ConfidenceInterval.jl")
 using DataFrames
 
 function MonteCarlo()
@@ -20,4 +20,15 @@ function MonteCarlo()
   println(lowprecison)
   println(midprecison)
   println(highprecison)
+
+  (bins1,counts1)=hist(revenuelist[, 10])
+  (bins2,counts2)=hist(revenuelist[, 20])
+  (bins3,counts3)=hist(revenuelist[, 50])
+  #ploter histogramme des gains
+  plot(bins1,counts1)
+  plot(bins2,counts2)
+  plot(bins3,counts3)
+  
+  #limiter chiffres significatifs.
+
 end
