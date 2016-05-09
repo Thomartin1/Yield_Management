@@ -4,30 +4,39 @@ include("Update_seats.jl")
 
 
 #A un instant donne on etudie toutes les demandes pour le reseau.
-function CompareBidQuery!(bidprices,leginflow,seatinventory,demandlist, timestamp)
-  #une routine qui renvoie les indices des demandes à l'instant timestamp
-  indexes = DemandAtTime(timestamp, demandlist)
+function CompareBidQuery!(bidprices, seatinventory, timestamp)
   #On initialise les valeurs de retour
-  acceptedquery[timestamp]= Dict{Int64,Dict{Int64,Int64}}()
-  totalrevenueperiod=0
+  acceptedquery[timestamp]= Dict{Int64,Dict{Int64, Float64}}()
+  totalrevenueperiod = 0
 
-  for querynum in indexes
-    flowid = demandlist[1][querynum]
-    bookingclass = demandlist[3][querynum]
-    rate = demandlist[4][querynum]
+  for i = 1:nbOD
 
-    revenue = SingleFlowSingleClassCompareBidQuery(flowid,bookingclass,rate,leginflow,bidprices)
-    println("la demande ",i," est acceptee" )
-    #mise à jour des places dispo.
-    fullflight = Update_seatinventory!(bookingclass,flowid,leginflow,seatinventory)
+    # On regarde la demande
+    demflowid = demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]]
+    placesuffisante = True
 
-    if(revenue && fullflight==false)
-      println("la demande ",i," est acceptee" )
-      #enregistrment de la demande dans une liste.
-      append!(acceptedquery,[demandlist[1][querynum],demandlist[2][querynum],demandlist[3][querynum],demandlist[4][querynum],demandlist[5][querynum]])
-      #mise à jour du revenue sur total sur le tiemframe considere.
-      totalrevenueperiod +=revenue
+    # On regarde avec le revenue si on peut ou non accepter la requete
+    revenue = SingleFlowSingleClassCompareBidQuery(idtoflow[i][1],idtoflow[i][2],bidprices)
+
+    # On regarde s'il y a la place suffisante sur les vols
+    for j in legfromflow[idtoflow[i][1]][idtoflow[i][2]]
+      if demflowid > seatinventory[idtoleg[j]]
+        placesuffisante = False
+      end
     end
+
+    # S'il y a assez de place, et que le revenue est suffisant on remplie acceptedquery
+    if placesuffisante
+      totalrevenueperiod +=revenue
+      acceptedquery[timestamp][idtoflow[i][1]][idtoflow[i][2]] = demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]]
+    else
+      acceptedquery[timestamp][idtoflow[i][1]][idtoflow[i][2]] = 0.0
+    end
+
   end
+
+  # On met à jour les places disponibles
+  Update_seatinventory!(acceptedquery[timestamp], seatinventory)
+
   return(acceptedquery,seatinventory,totalrevenueperiod)
 end

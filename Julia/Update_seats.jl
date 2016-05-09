@@ -1,16 +1,9 @@
 
 
-function Update_seatinventory!(bookingclass,flowid,leginflow,seatinventory)
-  flights=leginflow[flowid]
+function Update_seatinventory!(acceptedrequests_timeframe, seatinventory)
   #les demandes sont formulees 1 a 1. On decremente le nb de place restantes de 1 pour tous les vols de l'itineraire
-  for leg in flights
-    if(seatinventory[leg][bookingclass]>0)
-      seatinventory[leg][bookingclass]-=1
-      #si sur l'itineraire, un vol est plein, je renvoie false
-    else
-      return false
+  for i = 1:length(acceptedrequests_timeframe)
+    for leg in legfromflow[idtoflow[i][1]][idtoflow[i][2]]
+        seatinventory[leg] = seatinventory[leg] - acceptedrequests_timeframe[idtoflow[i][1]][idtoflow[i][2]]
     end
-  end
-  #je renvoie true si j'ai pu trouver un siege dans chaque vol
-  return true
 end
