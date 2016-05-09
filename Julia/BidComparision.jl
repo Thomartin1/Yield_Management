@@ -8,7 +8,7 @@ function CompareBidQuery!(bidprices,leginflow,seatinventory,demandlist, timestam
   #une routine qui renvoie les indices des demandes à l'instant timestamp
   indexes = DemandAtTime(timestamp, demandlist)
   #On initialise les valeurs de retour
-  acceptedquery=NULL
+  acceptedquery[timestamp]= Dict{Int64,Dict{Int64,Int64}}()
   totalrevenueperiod=0
 
   for querynum in indexes

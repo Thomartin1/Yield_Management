@@ -7,7 +7,8 @@ function Update_seatinventory!(bookingclass,flowid,leginflow,seatinventory)
     if(seatinventory[leg][bookingclass]>0)
       seatinventory[leg][bookingclass]-=1
       #si sur l'itineraire, un vol est plein, je renvoie false
-    else return false
+    else
+      return false
     end
   end
   #je renvoie true si j'ai pu trouver un siege dans chaque vol
