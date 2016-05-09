@@ -1,12 +1,5 @@
-
-using JuMP  # Need to say it whenever we use JuMP
-
-using CPLEX # Loading the CPLEX module for using its solver
-
-include("globalVar.jl")
-
 function ComputeBid(timeperiode,
-                    c = Capdico)
+                    cap)
 
   #MODEL CONSTRUCTION
   #--------------------
@@ -37,6 +30,12 @@ function ComputeBid(timeperiode,
         delta[j,k] = 0
       end
     end
+  end
+
+  Capdico = [0.0 for k = 1:nbleg]
+  for k=1:nbleg
+    Capdico[k] = cap[idtoleg[k]]
+    # capacity of each leg
   end
 
   # print(idtoflow[1])
@@ -70,7 +69,7 @@ function ComputeBid(timeperiode,
   @constraintref capconst[1:nbleg]
 
   for k=1:nbleg
-    capconst[k] = @constraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= c[k]) # capacity constraint
+    capconst[k] = @constraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= Capdico[k]) # capacity constraint
   end
 
 

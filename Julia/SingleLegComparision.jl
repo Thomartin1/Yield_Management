@@ -1,13 +1,11 @@
-using DataFrames
-using Distributions
  # Cette fonction s'occupe d'accepter, ou non, une requete sur un itineraire donné (flow) à un instant donné.
 
 function SingleFlowSingleClassCompareBidQuery(flowid,bookingclass,bidprices)
-  accepted = True
+  accepted = true
   revenue = faresfromflows[flowid][bookingclass]
   for leg in legfromflow[flowid][bookingclass]
-    if bidprices[idtoleg(leg)] > revenue
-      accepted = False
+    if bidprices[leg] > revenue
+      accepted = false
     end
   end
   if accepted
