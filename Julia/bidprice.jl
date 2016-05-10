@@ -75,7 +75,7 @@ function ComputeBid(timeperiode,
 
   #THE MODEL IN A HUMAN-READABLE FORMAT
   #------------------------------------
-  println("The optimization problem to be solved is:")
+  #println("The optimization problem to be solved is:")
   #print(myModel) # Shows the model constructed in a human-readable form
 
   #SOLVE IT AND DISPLAY THE RESULTS
