@@ -17,9 +17,8 @@ function ComputeBid(timeperiode,
 
   d = [0.0 for k = 1:nbOD, s=1:1000]
   for s = 1:1000
-    ///////////////////////
     for j=1:nbOD
-      d[j] = demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]]
+      d[j,s] = Poisson(demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]])
       # mean demand for fare class j є J
     end
   end
@@ -47,6 +46,8 @@ function ComputeBid(timeperiode,
 
   @variable(myModel, 0 <= x[j=1:nbOD, s=1:1000] <= d[j,s]) # allocation of capacity for O&D fare class j є J
 
+  @variable(mymodel, y[k = 1:nbleg])
+
   #OBJECTIVE
   #---------
 
@@ -55,10 +56,16 @@ function ComputeBid(timeperiode,
   #CONSTRAINTS
   #-----------
 
-  @constraintref capconst[1:nbleg]
+  @constraintref capconststoch[1:nbleg]
 
   for k=1:nbleg
-    capconst[k] = @constraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= Capdico[k]) # capacity constraint
+    capconststoch[k] = @constraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= capacityofleg[idtoleg[k]] - y[k]) # capacity constraint
+  end
+
+  @constraintref capconstglobal[1:nbleg]
+
+  for k=1:nbleg
+    capconstglobal[k] = @constraint(myModel, y[k] == capacityofleg[idtoleg[k]] - Capdico[k]) # capacity constraint
   end
 
 
@@ -79,7 +86,7 @@ function ComputeBid(timeperiode,
 
   bid = Dict{UTF8String,Float64}()
   for k=1:nbleg
-    bid[idtoleg[k]] = getdual(capconst[k])
+    bid[idtoleg[k]] = getdual(capconstglobal[k])
   end
   return bid
 end
