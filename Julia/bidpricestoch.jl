@@ -15,10 +15,13 @@ function ComputeBid(timeperiode,
     #  price for fare class j є J
   end
 
-  d = [0.0 for k = 1:nbOD]
-  for j=1:nbOD
-    d[j] = demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]]
-    # mean demand for fare class j є J
+  d = [0.0 for k = 1:nbOD, s=1:1000]
+  for s = 1:1000
+    ///////////////////////
+    for j=1:nbOD
+      d[j] = demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]]
+      # mean demand for fare class j є J
+    end
   end
 
   delta = [0 for m = 1:nbOD , n = 1:nbleg]
@@ -39,30 +42,15 @@ function ComputeBid(timeperiode,
     # capacity of each leg
   end
 
-  # print(idtoflow[1])
-  # println(d[1])
-  # print(idtoflow[2])
-  # println(d[2])
-  # print(idtoflow[3])
-  # println(d[3])
-  # print(idtoflow[4])
-  # println(d[4])
-  # print(idtoflow[5])
-  # println(d[5])
-  # print(idtoflow[6])
-  # println(d[6])
-  # print(idtoflow[1480])
-  # println(d[1480])
-
   #VARIABLES
   #---------
 
-  @variable(myModel, 0 <= x[j=1:nbOD] <= d[j]) # allocation of capacity for O&D fare class j є J
+  @variable(myModel, 0 <= x[j=1:nbOD, s=1:1000] <= d[j,s]) # allocation of capacity for O&D fare class j є J
 
   #OBJECTIVE
   #---------
 
-  @objective(myModel, Max, sum{r[j]*x[j], j=1:nbOD} ) # Sets the objective to be maximazed
+  @objective(myModel, Max, (1/1000)*sum{sum{r[j]*x[j, s], j=1:nbOD}, s = 1:1000}) # Sets the objective to be maximazed
 
   #CONSTRAINTS
   #-----------

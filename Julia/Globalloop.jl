@@ -21,6 +21,19 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # On pour chaque timeframe, un dictionnaire qui indique pour chaque itinéraire et chaque boking class si la demande a étét accesptée
   acceptedrequests = Dict{Int64,Dict{Int64,Dict{Int64,Float64}}}()
 
+  # Pour afficher les nombre de demandes
+  # dems = readtable(pathdemand)
+  # colum = dems[4]
+  # nbdems = 0
+  # for i = 1:size(colum)[1]
+  #   nbdems = nbdems + colum[i]
+  # end
+  # 
+  # places = 0
+  # for i = 1:nbleg
+  #   places = places +capacityofleg[idtoleg[i]]
+  # end
+
   # Le temps est découpé en timframes; on les examine un par un
   for time in newDB
     println("")
@@ -62,19 +75,38 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   #Il s'agira de la liste .des sieges qui n'ont pas ete pris
   # println(capacityofleg)
   # println(incomes)
-  for i = 1:length(acceptedrequests)[1]
-    for j = 1:nbOD
-      if !(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]] == acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
-        println("requete refusée:")
-        print("time ")
-        println(i)
-        print("flowid ")
-        println(idtoflow[j][1])
-        print("bookingclass ")
-        println(idtoflow[j][2])
-      end
-    end
-  end
+
+  # Pour voire les demandes rejetées
+  # for i = 1:length(acceptedrequests)[1]
+  #   for j = 1:nbOD
+  #     if !(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]] == acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
+  #       println("requete refusée:")
+  #       for leg in legfromflow[idtoflow[j][1]][idtoflow[j][2]]
+  #         print("leg ")
+  #         println(leg)
+  #         print("capacité ")
+  #         println(capacityofleg[leg])
+  #       end
+  #       print("time ")
+  #       println(i)
+  #       print("flowid ")
+  #       println(idtoflow[j][1])
+  #       print("bookingclass ")
+  #       println(idtoflow[j][2])
+  #     end
+  #   end
+  # end
+
+  # Pour compter le nombre de demandes
+  # compt = 0.0
+  # for i = 1:length(acceptedrequests)[1]
+  #   for j = 1:nbOD
+  #     compt = compt +acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]]
+  #   end
+  # end
+  # println(compt)
+  # println(places)
+  # println(nbdems)
 
   return(round(Int,incomes))
 end
