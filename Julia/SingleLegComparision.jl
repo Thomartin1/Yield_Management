@@ -3,10 +3,12 @@
 function SingleFlowSingleClassCompareBidQuery(flowid,bookingclass,bidprices)
   accepted = true
   revenue = faresfromflows[flowid][bookingclass]
+  sum = 0
   for leg in legfromflow[flowid][bookingclass]
-    if bidprices[leg] > revenue
-      accepted = false
-    end
+    sum = sum + bidprices[leg]
+  end
+  if sum > revenue
+    accepted = false
   end
   if accepted
     return revenue

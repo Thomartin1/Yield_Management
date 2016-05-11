@@ -20,6 +20,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   incomes = 0
   # On pour chaque timeframe, un dictionnaire qui indique pour chaque itinéraire et chaque boking class si la demande a étét accesptée
   acceptedrequests = Dict{Int64,Dict{Int64,Dict{Int64,Float64}}}()
+  capacityoflegcopy = capacityofleg
 
   # Pour afficher les nombre de demandes
   # dems = readtable(pathdemand)
@@ -28,7 +29,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # for i = 1:size(colum)[1]
   #   nbdems = nbdems + colum[i]
   # end
-  # 
+  #
   # places = 0
   # for i = 1:nbleg
   #   places = places +capacityofleg[idtoleg[i]]
@@ -40,15 +41,25 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
     print("Le pas de temps est: ")
     println(time)
     # on calcule les bidprices uniquement pour ce timeframe, ils seront CONSTANTS sur la periode
-    bidprices = ComputeBid(time, capacityofleg) #bidprice est un dictionaire double: Dict{Int64(flowid),Dict{Int64,float}}
+    bidprices = ComputeBid(time, capacityoflegcopy) #bidprice est un dictionaire double: Dict{Int64(flowid),Dict{Int64,float}}
     # on liste toutes les demandes acceptees dans le timeframe en cour et on ressort la list avec le revenue correspondant. acceptedrequests_timeframe
     # est une liste des demandes aceptees, seatinventory represente LES SIEGES QUI RESTENT LIBRES.
-    (acceptedrequests_time,revenuetf)  = CompareBidQuery!(bidprices, capacityofleg, time)
+
+    # for i = 1:nbleg
+    #   if bidprices[idtoleg[i]] != 0.0
+    #     print("leg ")
+    #     println(idtoleg[i])
+    #     print("   bidprice associé: ")
+    #     println(bidprices[idtoleg[i]])
+    #   end
+    # end
+
+    (acceptedrequests_time,revenuetf)  = CompareBidQuery!(bidprices, capacityoflegcopy, time)
     # On met a jour les donnees qui nous interessent.
     incomes = incomes+revenuetf
     acceptedrequests[time] = acceptedrequests_time
 
-    # On calcul le nombre de places prises par vol a parttir des demandes acceptées
+    # On calcul le nombre de places prises par vol a partir des demandes acceptées
     demparvol = Dict{UTF8String,Float64}()
     for i = 1:length(acceptedrequests[time])[1]
       for a in 1:nbleg
@@ -67,7 +78,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
       # println(capacityofleg[idtoleg[k]])
       # println("après une modification de")
       # println(demparvol[idtoleg[k]])
-      capacityofleg[idtoleg[k]] = capacityofleg[idtoleg[k]] - demparvol[idtoleg[k]]
+      capacityoflegcopy[idtoleg[k]] = capacityoflegcopy[idtoleg[k]] - demparvol[idtoleg[k]]
       # on diminue le nombre de places libre pour chaque leg
     end
 
@@ -77,25 +88,25 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # println(incomes)
 
   # Pour voire les demandes rejetées
-  # for i = 1:length(acceptedrequests)[1]
-  #   for j = 1:nbOD
-  #     if !(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]] == acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
-  #       println("requete refusée:")
-  #       for leg in legfromflow[idtoflow[j][1]][idtoflow[j][2]]
-  #         print("leg ")
-  #         println(leg)
-  #         print("capacité ")
-  #         println(capacityofleg[leg])
-  #       end
-  #       print("time ")
-  #       println(i)
-  #       print("flowid ")
-  #       println(idtoflow[j][1])
-  #       print("bookingclass ")
-  #       println(idtoflow[j][2])
-  #     end
-  #   end
-  # end
+  for i = 1:length(acceptedrequests)[1]
+    for j = 1:nbOD
+      if !(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]] == acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
+        println("requete refusée:")
+        for leg in legfromflow[idtoflow[j][1]][idtoflow[j][2]]
+          print("leg ")
+          println(leg)
+          print("capacité ")
+          println(capacityofleg[leg])
+        end
+        print("time ")
+        println(i)
+        print("flowid ")
+        println(idtoflow[j][1])
+        print("bookingclass ")
+        println(idtoflow[j][2])
+      end
+    end
+  end
 
   # Pour compter le nombre de demandes
   # compt = 0.0

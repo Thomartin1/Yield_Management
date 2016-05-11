@@ -17,8 +17,11 @@ function ComputeBid(timeperiode,
 
   d = [0.0 for k = 1:nbOD]
   for j=1:nbOD
-    d[j] = demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]]
-    # mean demand for fare class j є J
+    d[j] = 0
+    for temps = 1:timeperiode
+        d[j] = d[j] + demfromflow[temps][idtoflow[j][1]][idtoflow[j][2]]
+        # mean demand for fare class j є J
+    end
   end
 
   delta = [0 for m = 1:nbOD , n = 1:nbleg]
