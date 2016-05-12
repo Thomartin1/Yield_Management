@@ -13,7 +13,7 @@ function CompareBidQuery!(bidprices, seats, timestamp)
   for i = 1:nbOD
 
     # On regarde la demande
-    demflowid = demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]]
+    demandofflowid = demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]]
     placesuffisante = true
 
     # On regarde avec le revenue si on peut ou non accepter la requete
@@ -21,23 +21,22 @@ function CompareBidQuery!(bidprices, seats, timestamp)
 
     # On regarde s'il y a la place suffisante sur les vols
     for j in legfromflow[idtoflow[i][1]][idtoflow[i][2]]
-      if demflowid > seats[j]
+      if demandofflowid > seats[j]
         placesuffisante = false
       end
     end
 
     # S'il y a assez de place, et que le revenue est suffisant on remplie acceptedquery
     if placesuffisante
-      totalrevenueperiod += revenue*demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]]
-      acceptedquery_timestamp[idtoflow[i][1]][idtoflow[i][2]] = demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]]
+      totalrevenueperiod += revenue*demandofflowid
+      acceptedquery_timestamp[idtoflow[i][1]][idtoflow[i][2]] = demandofflowid
+      Update_seatinventory!(i,demandofflowid, seats)
     else
       acceptedquery_timestamp[idtoflow[i][1]][idtoflow[i][2]] = 0.0
     end
 
+    # On met à jour les places disponibles
+
   end
-
-  # On met à jour les places disponibles
-  Update_seatinventory!(acceptedquery_timestamp, seats)
-
   return(acceptedquery_timestamp, totalrevenueperiod)
 end

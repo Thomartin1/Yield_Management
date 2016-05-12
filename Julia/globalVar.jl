@@ -1,18 +1,18 @@
 # Liste des Paths à modifier pour avoir acces aux données
 
-PATH1 = "/home/sebastien/Documents/Projet_Air_France/p1.csv"
-PATH2 = "/home/sebastien/Documents/Projet_Air_France/p2.csv"
-PATH3 = "/home/sebastien/Documents/Projet_Air_France/p3.csv"
-PATH4 = "/home/sebastien/Documents/Projet_Air_France/p4.csv"
+PATH1 = "/Users/Thomartin/Documents/Ponts_2A/Projet_AF/CSV/p1.csv"
+PATH2 = "/Users/Thomartin/Documents/Ponts_2A/Projet_AF/CSV/p2.csv"
+PATH3 = "/Users/Thomartin/Documents/Ponts_2A/Projet_AF/CSV/p3.csv"
+PATH4 = "/Users/Thomartin/Documents/Ponts_2A/Projet_AF/CSV/p4.csv"
 
 # Liste des includes nécessaires à la définitions des diccionnaires
 
-include("/home/sebastien/Documents/Yield_Management/Julia/idToLeg.jl")
-include("/home/sebastien/Documents/Yield_Management/Julia/legFromFlow.jl")
-include("/home/sebastien/Documents/Yield_Management/Julia/idToFlow.jl")
-include("/home/sebastien/Documents/Yield_Management/Julia/capacityOfLeg.jl")
-include("/home/sebastien/Documents/Yield_Management/Julia/faresFromFlows.jl")
-include("/home/sebastien/Documents/Yield_Management/Julia/demandFromFlow.jl")
+include("/Users/Thomartin/Yield_Management/Julia/idToLeg.jl")
+include("/Users/Thomartin/Yield_Management/Julia/legFromFlow.jl")
+include("/Users/Thomartin/Yield_Management/Julia/idToFlow.jl")
+include("/Users/Thomartin/Yield_Management/Julia/capacityOfLeg.jl")
+include("/Users/Thomartin/Yield_Management/Julia/faresFromFlows.jl")
+include("/Users/Thomartin/Yield_Management/Julia/demandFromFlow.jl")
 
 # Variables globales
 
