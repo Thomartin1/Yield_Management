@@ -18,7 +18,8 @@ function ComputeBid(timeperiode,
   d = [0.0 for k = 1:nbOD, s=1:1000]
   for s = 1:1000
     for j=1:nbOD
-      d[j,s] = Poisson(demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]])
+      p = Poisson(demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]])
+      d[j,s] = rand(p,1)[1]
       # mean demand for fare class j є J
     end
   end

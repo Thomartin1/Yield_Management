@@ -4,14 +4,14 @@ using Distributions
 using JuMP  # Need to say it whenever we use JuMP
 using CPLEX # Loading the CPLEX module for using its solver
 ######import des fonctions codées dans d'autres fichiers
-include("globalVar.jl")
+include("path.jl")
 include("bidprice.jl")
 include("BidComparision.jl")
 ######ecriture d'une bouvcle de tres haut niveau qui permet de voir l'architecture du bid-pricing
 function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # On commence par mettre les données en forme, on appelle des routines.
   # Il est bon de noter que tout va se presenter sous forme de dictionaires puisque les vols ont des designations en string
-
+  include("/home/sebastien/Documents/Yield_Management/Julia/globalVar.jl")
   Time = readtable(pathtime)
   newDB=Time[1] #une liste des timeframes
   durationd=Time[2] # la duree de chaque time frame
@@ -22,12 +22,12 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   acceptedrequests = Dict{Int64,Dict{Int64,Dict{Int64,Float64}}}()
   capacityoflegcopy = capacityofleg
 
-  # Pour afficher les nombre de demandes
+  # Pour afficher les nombre de demandesb = bar(x,y,color="#0f87bf",align="center",alpha=0.4)
   # dems = readtable(pathdemand)
   # colum = dems[4]
   # nbdems = 0
   # for i = 1:size(colum)[1]
-  #   nbdems = nbdems + colum[i]
+  #   nbdems = nbdems + 2*colum[i]
   # end
   #
   # places = 0
@@ -88,36 +88,53 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # println(incomes)
 
   # Pour voire les demandes rejetées
-  for i = 1:length(acceptedrequests)[1]
-    for j = 1:nbOD
-      if !(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]] == acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
-        println("requete refusée:")
-        for leg in legfromflow[idtoflow[j][1]][idtoflow[j][2]]
-          print("leg ")
-          println(leg)
-          print("capacité ")
-          println(capacityofleg[leg])
-        end
-        print("time ")
-        println(i)
-        print("flowid ")
-        println(idtoflow[j][1])
-        print("bookingclass ")
-        println(idtoflow[j][2])
-      end
-    end
-  end
+  # for i = 1:2#length(acceptedrequests)[1]
+  #   for j = 1:nbOD
+  #     if !(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]] == acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
+  #       println("requete refusée:")
+  #       for leg in legfromflow[idtoflow[j][1]][idtoflow[j][2]]
+  #         print("leg ")
+  #         println(leg)
+  #         print("capacité ")
+  #         print(capacityofleg[leg])
+  #         print(" pour ")
+  #         println(acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
+  #       end
+  #       print("time ")
+  #       println(i)
+  #       # print("flowid ")
+  #       # println(idtoflow[j][1])
+  #       # print("bookingclass ")
+  #       # println(idtoflow[j][2])
+  #     end
+  #   end
+  # end
+
+  # Pour voir les legs remplis
+  # for i = 1:length(acceptedrequests)[1]
+  #   for j = 1:nbleg
+  #       if (capacityofleg[idtoleg[j]] == 0)
+  #         println("Vol plein:")
+  #         print("leg ")
+  #         println(idtoleg[j])
+  #         print("capacité ")
+  #         println(capacityofleg[idtoleg[j]])
+  #       end
+  #     end
+  #       print("time ")
+  #       println(i)
+  # end
 
   # Pour compter le nombre de demandes
   # compt = 0.0
   # for i = 1:length(acceptedrequests)[1]
   #   for j = 1:nbOD
-  #     compt = compt +acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]]
+  #     compt = compt + acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]]
   #   end
   # end
   # println(compt)
   # println(places)
   # println(nbdems)
-
+  
   return(round(Int,incomes))
 end

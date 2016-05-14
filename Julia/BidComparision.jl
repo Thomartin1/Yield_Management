@@ -13,7 +13,8 @@ function CompareBidQuery!(bidprices, seats, timestamp)
   for i = 1:nbOD
 
     # On regarde la demande
-    demandofflowid = demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]]
+    loi_poisson = Poisson(demfromflow[timestamp][idtoflow[i][1]][idtoflow[i][2]])
+    demandofflowid = rand(loi_poisson,1)[1]
     placesuffisante = true
 
     # On regarde avec le revenue si on peut ou non accepter la requete

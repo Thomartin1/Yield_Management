@@ -1,4 +1,4 @@
-# include("Globalloop.jl")
+include("Globalloop.jl")
 include("ComputeConfidenceInterval.jl")
 using DataFrames
 using Distributions
@@ -12,29 +12,41 @@ function MonteCarlo()
 
   #on fait tourner l'algo 1000 fois et on garde en memoire tous les resultats.
   revenuelist =Int64[]
-  for i in range(1,1000)
-    # append!(revenuelist,timeloop(pathtime,pathflow,pathflights,pathdemand))
-    append!(revenuelist,[rand(2000:4000)])
+  for i in range(1,2)
+    append!(revenuelist,[timeloop(PATH1,PATH2,PATH3,PATH4)])
   end
+  writecsv("/home/sebastien/Documents/Yield_Management/MonteCarlo.csv",revenuelist)
   println(revenuelist)
   # on analyse la distribution des revenues obtenus(intervales de confiance).
-  lowprecison = ConfidenceInterval(0.50,revenuelist)
-  midprecison = ConfidenceInterval(0.75,revenuelist)
-  highprecison = ConfidenceInterval(0.95,revenuelist)
+  println("low precison intervall")
+  lowprecison, tablow = ConfidenceInterval(0.50,revenuelist)
   println(lowprecison)
+  println("")
+  println("middle precison intervall")
+  midprecison, tabmid = ConfidenceInterval(0.75,revenuelist)
   println(midprecison)
+  println("")
+  print("high precison intervall")
+  highprecison, tabhigh = ConfidenceInterval(0.95,revenuelist)
   println(highprecison)
 
-  (bins1,counts1)=hist(revenuelist, 10)
-  (bins2,counts2)=hist(revenuelist, 20)
-  (bins3,counts3)=hist(revenuelist, 50)
-  println(bins1)
-  #ploter histogramme des gains
-  plot(bins1,counts1)
-  plot(bins2,counts2)
-  plot(bins3,counts3)
+  string = Any[]
+  append!(string,["nombre d'observations"])
+  append!(string,["moyenne"])
+  append!(string,["variance"])
+  append!(string,["confiance left"])
+  append!(string,["confiance right"])
 
-  #limiter chiffres significatifs.
+
+  writecsv("/home/sebastien/Documents/Yield_Management/confidence.csv",[string tablow tabmid tabhigh])
+  # (bins1,counts1)=hist(revenuelist, 10)
+  # (bins2,counts2)=hist(revenuelist, 20)
+  # (bins3,counts3)=hist(revenuelist, 50)
+  # println(bins1)
+  #ploter histogramme des gains
+  # bar(bins1,counts1)
+  # bar(bins2,counts2)
+  # bar(bins3,counts3)
 
 end
 

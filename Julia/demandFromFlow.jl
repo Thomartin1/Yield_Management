@@ -14,18 +14,18 @@ function demFromFlow(PATH)
     if in(time,keys(DemFlow))
       # On check si le flow est référence
       if in(flowid,keys(DemFlow[time]))
-        DemFlow[time][flowid][bookingclass] = 2*demande
+        DemFlow[time][flowid][bookingclass] = demande
       else
         DemFlow[time][flowid] = Dict{Int64,Int64}()
-        DemFlow[time][flowid][bookingclass]= 2*demande
+        DemFlow[time][flowid][bookingclass]= demande
       end
     else
       DemFlow[time] = Dict{Int64,Dict{Int64,Float64}}()
       if in(flowid,keys(DemFlow[time]))
-        DemFlow[time][flowid][bookingclass] = 2*demande
+        DemFlow[time][flowid][bookingclass] = demande
       else
         DemFlow[time][flowid] = Dict{Int64,Int64}()
-        DemFlow[time][flowid][bookingclass]= 2*demande
+        DemFlow[time][flowid][bookingclass]= demande
       end
     end
   end
