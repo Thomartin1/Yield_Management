@@ -5,7 +5,7 @@ using JuMP  # Need to say it whenever we use JuMP
 using CPLEX # Loading the CPLEX module for using its solver
 ######import des fonctions codées dans d'autres fichiers
 include("path.jl")
-include("bidprice.jl")
+include("bidpricestoch.jl")
 include("BidComparision.jl")
 ######ecriture d'une bouvcle de tres haut niveau qui permet de voir l'architecture du bid-pricing
 function timeloop(pathtime,pathdemand,pathflow,pathflights)
@@ -135,6 +135,6 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # println(compt)
   # println(places)
   # println(nbdems)
-  
+
   return(round(Int,incomes))
 end

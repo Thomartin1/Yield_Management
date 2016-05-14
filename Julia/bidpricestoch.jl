@@ -47,7 +47,7 @@ function ComputeBid(timeperiode,
 
   @variable(myModel, 0 <= x[j=1:nbOD, s=1:1000] <= d[j,s]) # allocation of capacity for O&D fare class j є J
 
-  @variable(mymodel, y[k = 1:nbleg])
+  @variable(myModel, y[k = 1:nbleg])
 
   #OBJECTIVE
   #---------
