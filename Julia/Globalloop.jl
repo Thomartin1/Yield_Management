@@ -5,8 +5,9 @@ using JuMP  # Need to say it whenever we use JuMP
 using CPLEX # Loading the CPLEX module for using its solver
 ######import des fonctions codées dans d'autres fichiers
 include("path.jl")
-include("bidpricestoch.jl")
+include("bidprice.jl")
 include("BidComparision.jl")
+include("plot.jl")
 ######ecriture d'une bouvcle de tres haut niveau qui permet de voir l'architecture du bid-pricing
 function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # On commence par mettre les données en forme, on appelle des routines.
@@ -20,6 +21,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   incomes = 0
   # On pour chaque timeframe, un dictionnaire qui indique pour chaque itinéraire et chaque boking class si la demande a étét accesptée
   acceptedrequests = Dict{Int64,Dict{Int64,Dict{Int64,Float64}}}()
+  bidpricememory = Dict{Int64,Dict{UTF8String,Float64}}()
   capacityoflegcopy = capacityofleg
 
   # Pour afficher les nombre de demandesb = bar(x,y,color="#0f87bf",align="center",alpha=0.4)
@@ -58,17 +60,20 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
     # On met a jour les donnees qui nous interessent.
     incomes = incomes+revenuetf
     acceptedrequests[time] = acceptedrequests_time
+    bidpricememory[time] = Dict{UTF8String,Float64}()
+    bidpricememory[time] = bidprices
 
     # On calcul le nombre de places prises par vol a partir des demandes acceptées
     demparvol = Dict{UTF8String,Float64}()
-    for i = 1:length(acceptedrequests[time])[1]
-      for a in 1:nbleg
+    for a in 1:nbleg
       demparvol[idtoleg[a]] = 0.0
-      end
+    end
+    for i = 1:nbOD
       for l in legfromflow[idtoflow[i][1]][idtoflow[i][2]]
-      demparvol[l] = demparvol[l] + acceptedrequests[time][idtoflow[i][1]][idtoflow[i][2]]
+        demparvol[l] = demparvol[l] + acceptedrequests[time][idtoflow[i][1]][idtoflow[i][2]]
       end
     end
+
 
     for k=1:nbleg
       # print("Le vol numero ")
@@ -78,7 +83,6 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
       # println(capacityofleg[idtoleg[k]])
       # println("après une modification de")
       # println(demparvol[idtoleg[k]])
-      capacityoflegcopy[idtoleg[k]] = capacityoflegcopy[idtoleg[k]] - demparvol[idtoleg[k]]
       # on diminue le nombre de places libre pour chaque leg
     end
 
@@ -88,7 +92,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # println(incomes)
 
   # Pour voire les demandes rejetées
-  # for i = 1:2#length(acceptedrequests)[1]
+  # for i = 1:1#length(acceptedrequests)[1]
   #   for j = 1:nbOD
   #     if !(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]] == acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
   #       println("requete refusée:")
@@ -98,7 +102,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   #         print("capacité ")
   #         print(capacityofleg[leg])
   #         print(" pour ")
-  #         println(acceptedrequests[i][idtoflow[j][1]][idtoflow[j][2]])
+  #         println(demfromflow[i][idtoflow[j][1]][idtoflow[j][2]])
   #       end
   #       print("time ")
   #       println(i)
@@ -135,6 +139,42 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   # println(compt)
   # println(places)
   # println(nbdems)
+
+  # Créer des plots
+  x1 = []
+  cap1 = []
+  y1 = Dict{Int64,Array{Any,1}}()
+  for i = 1:nbleg
+    append!(x1,[idtoleg[i]])
+    append!(cap1,[capacityoflegcopy[idtoleg[i]]])
+  end
+  demparvolplot = Dict{UTF8String,Float64}()
+  for j = 1:17
+    for a in 1:nbleg
+      demparvolplot[idtoleg[a]] = 0.0
+    end
+    for m = 1:nbOD
+      for l in legfromflow[idtoflow[m][1]][idtoflow[m][2]]
+      demparvolplot[l] = demparvolplot[l] + acceptedrequests[j][idtoflow[m][1]][idtoflow[m][2]]
+      end
+    end
+    y1[j] = []
+    for k = 1:nbleg
+      append!(y1[j],[demparvolplot[idtoleg[k]]])
+    end
+  end
+
+  #plotCapacity(x1,y1,cap1)
+
+  numvol = 42
+  #21, 24, 27, 31, 34, 35, 42, 51, 52, 59, 62, 64, 67, 70, 72, 76, 77, 78, 84, 86, 90, 91, 92, 95, 101, 103, 109, 111, 120, 126, 148, 149, 151, 153, 155, 181, 183, 185, 186, 187, 189,
+  bidaploter = []
+  for j = 1:17
+    append!(bidaploter, [bidpricememory[j][idtoleg[numvol]]])
+  end
+  println(bidaploter)
+
+  #plotBidprice(bidaploter)
 
   return(round(Int,incomes))
 end

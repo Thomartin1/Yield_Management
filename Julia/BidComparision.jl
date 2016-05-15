@@ -36,8 +36,6 @@ function CompareBidQuery!(bidprices, seats, timestamp)
       acceptedquery_timestamp[idtoflow[i][1]][idtoflow[i][2]] = 0.0
     end
 
-    # On met à jour les places disponibles
-
   end
   return(acceptedquery_timestamp, totalrevenueperiod)
 end

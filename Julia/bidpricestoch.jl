@@ -8,6 +8,7 @@ function ComputeBid(timeperiode,
   myModel = Model(solver=CplexSolver())
 
   filetest = readtable(PATH2)
+  nbsenario = 100
 
   r = [0.0 for k = 1:nbOD]
   for j=1:nbOD
@@ -15,8 +16,8 @@ function ComputeBid(timeperiode,
     #  price for fare class j є J
   end
 
-  d = [0.0 for k = 1:nbOD, s=1:1000]
-  for s = 1:1000
+  d = [0.0 for k = 1:nbOD, s=1:nbsenario]
+  for s = 1:nbsenario
     for j=1:nbOD
       p = Poisson(demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]])
       d[j,s] = rand(p,1)[1]
@@ -45,14 +46,14 @@ function ComputeBid(timeperiode,
   #VARIABLES
   #---------
 
-  @variable(myModel, 0 <= x[j=1:nbOD, s=1:1000] <= d[j,s]) # allocation of capacity for O&D fare class j є J
+  @variable(myModel, 0 <= x[j=1:nbOD, s=1:nbsenario] <= d[j,s]) # allocation of capacity for O&D fare class j є J
 
   @variable(myModel, y[k = 1:nbleg])
 
   #OBJECTIVE
   #---------
 
-  @objective(myModel, Max, (1/1000)*sum{sum{r[j]*x[j, s], j=1:nbOD}, s = 1:1000}) # Sets the objective to be maximazed
+  @objective(myModel, Max, (1/nbsenario)*sum{sum{r[j]*x[j, s], j=1:nbOD}, s = 1:nbsenario}) # Sets the objective to be maximazed
 
   #CONSTRAINTS
   #-----------

@@ -12,7 +12,7 @@ function MonteCarlo()
 
   #on fait tourner l'algo 1000 fois et on garde en memoire tous les resultats.
   revenuelist =Int64[]
-  for i in range(1,2)
+  for i in range(1,100)
     append!(revenuelist,[timeloop(PATH1,PATH2,PATH3,PATH4)])
   end
   writecsv("/home/sebastien/Documents/Yield_Management/MonteCarlo.csv",revenuelist)
