@@ -8,7 +8,7 @@ function ComputeBid(timeperiode,
   myModel = Model(solver=CplexSolver())
 
   filetest = readtable(PATH2)
-  nbsenario = 100
+  nbsenario = 10
 
   r = [0.0 for k = 1:nbOD]
   for j=1:nbOD
@@ -19,9 +19,11 @@ function ComputeBid(timeperiode,
   d = [0.0 for k = 1:nbOD, s=1:nbsenario]
   for s = 1:nbsenario
     for j=1:nbOD
-      p = Poisson(demfromflow[timeperiode][idtoflow[j][1]][idtoflow[j][2]])
-      d[j,s] = rand(p,1)[1]
-      # mean demand for fare class j є J
+      for temps = 1:timeperiode
+        p = Poisson(demfromflow[temps][idtoflow[j][1]][idtoflow[j][2]])
+        d[j,s] = d[j,s] + rand(p,1)[1]
+        # mean demand for fare class j є J
+      end
     end
   end
 
@@ -58,10 +60,12 @@ function ComputeBid(timeperiode,
   #CONSTRAINTS
   #-----------
 
-  @constraintref capconststoch[1:nbleg]
+  @constraintref capconststoch[1:nbleg, 1:nbsenario]
 
-  for k=1:nbleg
-    capconststoch[k] = @constraint(myModel, sum{delta[j,k]*x[j], j=1:nbOD} <= capacityofleg[idtoleg[k]] - y[k]) # capacity constraint
+  for s =1:nbsenario
+    for k=1:nbleg
+      capconststoch[k,s] = @constraint(myModel, sum{delta[j,k]*x[j,s], j=1:nbOD} <= capacityofleg[idtoleg[k]] - y[k]) # capacity constraint
+    end
   end
 
   @constraintref capconstglobal[1:nbleg]
@@ -81,14 +85,16 @@ function ComputeBid(timeperiode,
   status = solve(myModel) # solves the model
 
   # println("Objective value: ", getObjectiveValue(myModel)) # getObjectiveValue(model_name) gives the optimum objective value
-  #for j=1:nbOD
-  #  println("x = ", getValue(x)) # getValue(decision_variable) will give the optimum value of the associated decision variable
-  #end
-  #
+  # for j=1:nbOD
+  #  println("y = ", getValue(y)) # getValue(decision_variable) will give the optimum value of the associated decision variable
+  # end
 
   bid = Dict{UTF8String,Float64}()
   for k=1:nbleg
-    bid[idtoleg[k]] = getdual(capconstglobal[k])
+    bid[idtoleg[k]] = - getdual(capconstglobal[k])
+    if  capacityofleg[idtoleg[k]] != 0
+      println(capacityofleg[idtoleg[k]])
+    end
   end
   return bid
 end

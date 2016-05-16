@@ -209,3 +209,39 @@ function plotCapacity(listoflegs, listoflistofcapacity, capacity, listcolors = l
   response = Plotly.plot(data, ["layout" => layout, "filename" => "stacked-bar", "fileopt" => "overwrite"])
   plot_url = response["url"]
 end
+
+function plotMonteCarlo(listcolors = listcolorsgrad)
+  echelle = [1500000 + 10000*k for k = 1:30]
+  tab = [1670528,1661410,1731737,1655218,1675659,1742432,1676167,1630005,1711317,1642368,1660285,1635878,1634662,1720643,1698019,1631610,1742537,1611023,1679491,1649772,1681944,1627968,1621227,1684128,1620138,1664278,1657785,1671681,1674595,1630976,1658343,1716714,1711568,1729568,1692494,1663316,1674002,1656059,1649772,1670748,1661894,1644063,1655684,1648842,1660326,1661204,1620407,1658163,1703592,1607730,1608473,1639422,1682566,1646070,1636794,1676918,1635643,1685650,1663819,1707717,1675323,1670568,1645102,1629720,1619450,1676830,1641750,1675050,1588842,1659174,1712394,1642657,1643874,1650663,1668493,1702216,1723663,1672372,1640737,1694225,1702810,1646749,1666262,1643815,1646018,1666006,1690202,1632094,1673690,1714518,1676442,1670217,1595669,1654564,1669603,1669159,1650899,1646163,1648444,1654526]
+  results = [0 for k = 1:30]
+  for i = 1:100
+    results[round(Int,((tab[i]-1500000)/10000))] += 1
+  end
+  trace1 = [
+    "x" => echelle,
+    "y" => results,
+    "marker" => ["color" => listcolors[1]],
+    "type" => "bar"
+  ]
+  data = [trace1]
+  layout = ["barmode" => "stack",
+            "title" => "MonteCarlo results for stichastic method",
+            "xaxis" => ["tickfont" => [
+                "size" => 14,
+                "color" => "rgb(107, 107, 107)"
+              ]],
+            "yaxis" => [
+              "title" => "number of occurences",
+              "titlefont" => [
+                "size" => 16,
+                "color" => "rgb(107, 107, 107)"
+              ]],
+              "xaxis" => [
+                "title" => "revenue",
+                "titlefont" => [
+                  "size" => 16,
+                  "color" => "rgb(107, 107, 107)"
+                ]]]
+  response = Plotly.plot(data, ["layout" => layout, "filename" => "stacked-bar", "fileopt" => "overwrite"])
+  plot_url = response["url"]
+end
