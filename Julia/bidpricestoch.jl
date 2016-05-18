@@ -8,7 +8,7 @@ function ComputeBid(timeperiode,
   myModel = Model(solver=CplexSolver())
 
   filetest = readtable(PATH2)
-  nbsenario = 10
+  nbsenario = 100
 
   r = [0.0 for k = 1:nbOD]
   for j=1:nbOD
@@ -92,9 +92,9 @@ function ComputeBid(timeperiode,
   bid = Dict{UTF8String,Float64}()
   for k=1:nbleg
     bid[idtoleg[k]] = - getdual(capconstglobal[k])
-    if  capacityofleg[idtoleg[k]] != 0
-      println(capacityofleg[idtoleg[k]])
-    end
+    # if  capacityofleg[idtoleg[k]] != 0
+    #   println(capacityofleg[idtoleg[k]])
+    # end
   end
   return bid
 end
