@@ -8,7 +8,7 @@ function ComputeBid(timeperiode,
   myModel = Model(solver=CplexSolver())
 
   filetest = readtable(PATH2)
-  nbsenario = 100
+  nbsenario = 10
 
   r = [0.0 for k = 1:nbOD]
   for j=1:nbOD

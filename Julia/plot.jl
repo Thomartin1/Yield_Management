@@ -184,16 +184,16 @@ function plotCapacity(listoflegs, listoflistofcapacity, capacity, listcolors = l
     "marker" => ["color" => listcolors[17]],
     "type" => "bar"
   ]
-  trace18 = [
-    "x" => listoflegs,
-    "y" => capacity,
-    "name" => "Capacity left",
-    "marker" => ["color" => "rgb(223, 12, 28)"],
-    "type" => "bar"
-  ]
+  # trace18 = [
+  #   "x" => listoflegs,
+  #   "y" => capacity,
+  #   "name" => "Capacity left",
+  #   "marker" => ["color" => "rgb(223, 12, 28)"],
+  #   "type" => "bar"
+  # ]
   data = [trace1, trace2, trace3, trace4,trace5, trace6, trace7, trace8,
           trace9, trace10, trace11, trace12,trace13, trace14, trace15, trace16,
-          trace17, trace18]
+          trace17]#, trace18]
   layout = ["barmode" => "stack",
             "title" => "Seats sold by flight for each TimeFrame",
             "xaxis" => ["tickfont" => [

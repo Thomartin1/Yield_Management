@@ -164,7 +164,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
     end
   end
 
-  #plotCapacity(x1,y1,cap1)
+  plotCapacity(x1,y1,cap1)
 
   numvol = 42
   #21, 24, 27, 31, 34, 35, 42, 51, 52, 59, 62, 64, 67, 70, 72, 76, 77, 78, 84, 86, 90, 91, 92, 95, 101, 103, 109, 111, 120, 126, 148, 149, 151, 153, 155, 181, 183, 185, 186, 187, 189,
@@ -174,7 +174,7 @@ function timeloop(pathtime,pathdemand,pathflow,pathflights)
   end
   # println(bidaploter)
 
-  #plotBidprice(bidaploter)
+  plotBidprice(bidaploter)
 
   return(round(Int,incomes))
 end
